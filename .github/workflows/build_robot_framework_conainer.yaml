@@ -11,7 +11,7 @@ on:
 
 env:
   #D_FILE: Dockerfile
-  D_FILE: test/docker_files/robot_py3_d_file
+  D_FILE: docker_files/robot_py3_d_file
   IMAGE_NAME: testauto-robot
   VERSION: 0.0.1
 
