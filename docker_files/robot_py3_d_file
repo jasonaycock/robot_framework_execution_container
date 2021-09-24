@@ -1,0 +1,18 @@
+FROM python:slim
+RUN apt-get update \
+    && apt-get install -y   build-essential \
+                            libssl-dev \
+                            musl-dev \
+                            libffi-dev \
+                            curl \
+                            wget \
+    && pip install --upgrade pip \
+    && pip install robotframework \
+    && pip install robotframework-requests \
+    && pip install robotframework-jsonlibrary \
+    && pip install robotframework-seleniumlibrary \
+    && pip install pyyaml \
+    && pip install robotframework-sshlibrary
+ENTRYPOINT \bin\sh
+
+
