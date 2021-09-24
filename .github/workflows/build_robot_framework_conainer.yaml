@@ -1,0 +1,48 @@
+# This is a basic workflow to help you get started with Actions
+
+name: build_robot_framework_container
+on:
+  # push:
+  #   paths: 
+  #     - 'docker_files/robot_py3_d_file'
+  #     - '.github/workflows/build_testauto_robot_fw.yaml'
+  workflow_dispatch:
+  # put version as an input to the dispatch
+
+env:
+  #D_FILE: Dockerfile
+  D_FILE: test/docker_files/robot_py3_d_file
+  IMAGE_NAME: testauto-robot
+  VERSION: 0.0.1
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip-ci')"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests
+        run:  docker build --file $D_FILE .
+
+  # Push image to GitHub Packages.
+  push:
+    needs: test
+    runs-on: ubuntu-latest
+    # if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build image
+        run: docker build . --file $D_FILE --tag image
+
+      - name: Log into github registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image to github
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository }}/$IMAGE_NAME
+
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag image $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
